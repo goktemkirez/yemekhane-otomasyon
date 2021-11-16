@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "yemekhane-otomasyon",
+    "slug": "yemekhane-otomasyon",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "yemekhane-otomasyon"
+}
