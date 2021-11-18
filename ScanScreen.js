@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AppRegistry,
   StyleSheet,
@@ -11,16 +11,56 @@ import QRCodeScanner from "react-native-qrcode-scanner";
 import { RNCamera } from "react-native-camera";
 
 export default function ScanScreen() {
-  const [approved, setapproved] = useState("false");
+  const [approved, setApproved] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  // const [timeout, setTimeout] = useState(3000);
+
+  // const onSuccess = async (e) => {
+  //   try {
+  //     setLoading(true);
+
+  //     const response = await fetch(
+  //       `http://192.168.1.37:5499/user/try-pass?external_id_hash=${e.data}`
+  //     );
+
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   } finally {
+  //     setLoading(false);
+  //     // setTimeout(() => {
+  //     //   scanner.reactivate();
+  //     // }, 3000);
+  //   }
+  // };
+
   const onSuccess = (e) => {
-    setapproved(e.data);
-    // Linking.openURL(e.data).catch((err) =>
-    //   console.error("An error occured", err)
-    // );
+    console.log(e.data);
+    postRecord(e.data);
   };
+
+  const postRecord = async (e) => {
+    await fetch(`http://192.168.1.37:5499/user/try-pass?external_id_hash=${e}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (data.record) {
+          setApproved(true);
+        }
+      });
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setApproved(false);
+    }, 3000);
+  }, [approved]);
 
   return (
     <QRCodeScanner
+      // ref={(node) => {
+      //   this.scanner = node;
+      // }}
       reactivate={true}
       reactivateTimeout={3000}
       onRead={onSuccess}
@@ -29,9 +69,20 @@ export default function ScanScreen() {
         <Text style={styles.centerText}>Yemekhane Otomasyon Uygulaması</Text>
       }
       bottomContent={
-        <TouchableOpacity style={styles.buttonTouchable}>
-          <Text style={styles.buttonText}>{approved}</Text>
-        </TouchableOpacity>
+        // <TouchableOpacity style={styles.buttonTouchable}>
+        //   <Text style={styles.buttonText}>{approved}</Text>
+        // </TouchableOpacity>
+        <View>
+          {approved ? (
+            <View>
+              <Text>Onaylanmıştır !</Text>
+            </View>
+          ) : (
+            <View>
+              <Text>QR kodu okutunuz</Text>
+            </View>
+          )}
+        </View>
       }
     />
   );
@@ -54,6 +105,7 @@ const styles = StyleSheet.create({
   },
   buttonTouchable: {
     padding: 16,
+    backgroundColor: "red",
   },
 });
 
